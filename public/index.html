@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>修订可证明的物化缓存</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <div>
+          <h1>修订可证明的物化缓存</h1>
+          <p id="subtitle" class="muted">源记录 → 失效通知 → 物化结果 → 浏览器下载</p>
+        </div>
+      </div>
+      <div class="status-strip">
+        <div class="pill" title="数据库中的全局变更序号">
+          <span class="label">数据序号</span>
+          <strong id="seq-badge">–</strong>
+        </div>
+        <div class="pill" title="失效通知流连接状态">
+          <span class="label">通知流</span>
+          <strong id="sse-badge">连接中</strong>
+        </div>
+        <div class="pill" title="未消费的失效事件数量">
+          <span class="label">待处理</span>
+          <strong id="pending-badge">0</strong>
+        </div>
+        <button id="btn-refresh" class="ghost" type="button">刷新</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel records-panel">
+        <div class="panel-head">
+          <h2>源记录</h2>
+          <span id="record-count" class="muted small"></span>
+        </div>
+        <div class="toolbar">
+          <select id="record-filter-status" aria-label="按状态筛选">
+            <option value="">全部状态</option>
+            <option value="active">活跃</option>
+            <option value="paused">暂停</option>
+            <option value="archived">归档</option>
+          </select>
+          <input id="record-search" type="search" placeholder="搜索名称…" aria-label="搜索记录" />
+          <button id="btn-new-record" class="primary" type="button">新增记录</button>
+        </div>
+        <div class="table-scroll">
+          <table class="records">
+            <thead>
+              <tr>
+                <th>记录</th>
+                <th>区域</th>
+                <th>状态</th>
+                <th>品类</th>
+                <th class="num">金额(分)</th>
+                <th class="num">修订</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="records-body"></tbody>
+          </table>
+        </div>
+        <p class="hint">
+          修改任一记录会写入一条持久化失效事件；右侧缓存只有在确实依赖被修改字段时才会失效。
+        </p>
+      </section>
+
+      <section class="panel specs-panel">
+        <div class="panel-head">
+          <h2>物化结果与版本证明</h2>
+          <button id="btn-new-spec" class="primary" type="button">新增聚合</button>
+        </div>
+        <div id="spec-list" class="spec-list"></div>
+      </section>
+
+      <aside class="panel side-panel">
+        <div class="panel-head">
+          <h2>控制台</h2>
+        </div>
+        <div class="controls">
+          <label class="field">
+            <span>读取策略</span>
+            <select id="read-policy">
+              <option value="watermark">水位线 + 定期全量校验（默认）</option>
+              <option value="strict">每次读取全量校验</option>
+            </select>
+          </label>
+          <div class="button-row">
+            <button id="btn-drop-notifications" class="warning" type="button">
+              断开通知并丢弃事件
+            </button>
+            <button id="btn-restore-notifications" class="ghost" type="button">
+              恢复通知流
+            </button>
+          </div>
+          <div class="button-row">
+            <button id="btn-rebuild-all" class="ghost" type="button">重建全部缓存</button>
+            <button id="btn-verify-all" class="ghost" type="button">全量校验全部</button>
+          </div>
+          <label class="check">
+            <input id="auto-refresh" type="checkbox" checked />
+            <span>收到通知时自动刷新</span>
+          </label>
+        </div>
+        <div class="panel-head compact">
+          <h2>失效通知</h2>
+          <span id="notif-count" class="muted small"></span>
+        </div>
+        <ol id="notification-feed" class="feed"></ol>
+        <div class="panel-head compact">
+          <h2>操作日志</h2>
+        </div>
+        <ol id="log-feed" class="log"></ol>
+      </aside>
+    </main>
+
+    <div id="modal-root" class="modal-root" hidden></div>
+    <div id="toast-root" class="toast-root" aria-live="polite"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

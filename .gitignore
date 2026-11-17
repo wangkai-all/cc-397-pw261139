@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 node_modules/
+data/
+artifacts-e2e/
 .venv/
 __pycache__/
 .claude/

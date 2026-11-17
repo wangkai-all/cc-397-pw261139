@@ -1,0 +1,21 @@
+{
+  "name": "revision-proof-cache",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Revision-aware materialized caches with verifiable version proofs, push invalidation and download-cache reconciliation.",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "demo": "node scripts/demo.js",
+    "seed": "node scripts/seed.js",
+    "e2e": "node scripts/e2e-dom.mjs",
+    "test": "node --test --test-concurrency=1 --test-timeout=40000 test/*.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  }
+}
